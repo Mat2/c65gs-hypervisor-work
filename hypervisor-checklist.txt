@@ -1,0 +1,97 @@
+-------------------------------------------------------------------------------
+part 0:
+    Preparation. As I see it, most work can be done though ad hoc emulation of
+    needed parts.  For this I use an approved system of my own for rapid code
+    development.  The first step is assemblation of needed informations about
+    the hardware interfaces relevant for the FAT 32 and hypervisor routines. 
+    Probably this also ease work for future development, as the documentation
+    state seem somewhat limited to me.  Anyhow it's nice that there exist some
+    documentation.  After successful emulation my environment generates 4502
+    compatible assembler source listings of the developed routines.  Added to
+    the existing Mega 65 sources and after compilation, the modified kickstart
+    can be finally tested with a compatible FPGA development board.  This
+    workflow is faster than regular development and testing with a Nexys 4 DDR
+    board.
+
+Part 1:
+    The sd card routines lack write access which is needed -> FDISK.  Because
+    all write related FAT32 routines are also not present, implementing them
+    would be generally advantageous for further work on the hypervisor as
+    needed anyhow.
+
+Source file:
+    https://github.com/gardners/c65gs/blob/master/kickstart.a65
+
+T1  Line 817: sdreset
+
+    Problem:
+      The routine assume a predefined block size of 512 byte for reads (conform
+      to the compatibility requirement defined in the SD Host Controller
+      Simplified Specification Version 3.00?).  This assumtion is chancy
+      because there exist producers which products deviate from the standard. 
+      This can be the reason for obscure access errors in case of requests
+      lesser than the block size.
+
+    Solution:
+      1. As addition, the block size for read and write requests should be
+         initialized to 512 bytes.	
+
+T2  Write a sd_writesector routine
+
+T3  Routines to be implemented:
+    trap_dos_readfile 
+    trap_dos_getdisksize 
+    trap_dos_getcwd 
+    trap_dos_chdir 
+    trap_dos_mkdir 
+    trap_dos_rmdir 
+    trap_dos_mkfile 
+    trap_dos_writefile 
+    trap_dos_seekfile 
+    trap_dos_rmfile 
+    trap_dos_fstat 
+    trap_dos_rename 
+    trap_dos_filedate
+
+T4: Writing a test routine for all added routines
+T5: Debugging
+-------------------------------------------------------------------------------
+Part 2:
+    The DOS routines lacks some routines which are of relevance for a
+    hypervisior.
+
+Source File:
+    https://github.com/gardners/c65gs/blob/master/kickstart_dos.a65
+
+T6  Routines to be implemented:
+    trap_dos_gettasklist 
+    trap_dos_sendmessage 
+    trap_dos_receivemessage 
+    trap_dos_writeintotask 
+    trap_dos_readoutoftask 
+    trap_dos_terminateothertask 
+    trap_dos_create_task_native 
+    trap_dos_load_into_task 
+    trap_dos_create_task_c64 
+    trap_dos_create_task_c65 
+    trap_dos_exit_and_switch_to_task 
+    trap_dos_switch_to_task 
+    trap_dos_exit_task
+
+T7  Test routine
+T8  Debugging
+-------------------------------------------------------------------------------
+Part 4;
+T9  Writing an FDISK application
+T10  Debugging
+-------------------------------------------------------------------------------
+Part 5:
+    I think a central, menu driven interface for the hypervisor services would
+    be nice.  This interface should include functionality for system
+    configuration, session handling and ressource management in combination
+    with loading and storing of the runtime state (freezer functionality)
+
+T11 Writing a menu driven shell for the hypervisor
+-------------------------------------------------------------------------------
+T12 Tea time ;)
+
